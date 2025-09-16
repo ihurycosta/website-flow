@@ -39,17 +39,20 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
   setError(''); // Limpa erros antigos
 
   try {
-    const response = await fetch('auraprateada.shop/processa.php', {
+    const formData = new URLSearchParams();
+    formData.append('player_id', playerId);
+    formData.append('product_name', product.name);
+    formData.append('product_price', product.price);
+    formData.append('payment_method', method);
+
+    const response = await fetch('https://auraprateada.shop/create-payment.php', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        // MUDANÇA AQUI
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({
-        player_id: playerId,
-        product_name: product.name,
-        product_price: product.price,
-        payment_method: method,
-      }),
+      // MUDANÇA AQUI
+      body: formData.toString(),
     });
 
     // Tenta ler a resposta como JSON
