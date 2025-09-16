@@ -25,7 +25,7 @@ const ImageCarousel: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative h-96 md:h-[500px] lg:h-[600px] overflow-hidden rounded-xl">
+    <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden rounded-xl shadow-2xl">
       {/* Images */}
       <div className="relative h-full">
         {images.map((image, index) => (
