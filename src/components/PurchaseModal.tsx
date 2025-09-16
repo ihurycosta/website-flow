@@ -33,41 +33,50 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
   };
 
   const handlePaymentMethodSelect = async (method: 'pix' | 'credit_card') => {
-    setPaymentMethod(method);
-    setStep('processing');
-    setIsLoading(true);
+  setPaymentMethod(method);
+  setStep('processing');
+  setIsLoading(true);
+  setError(''); // Limpa erros antigos
 
-    try {
-      // Simular chamada para API do MercadoPago
-      const response = await fetch('https://testessss.xo.je/create-payment.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          player_id: playerId,
-          product_name: product.name,
-          product_price: product.price,
-          payment_method: method,
-        }),
-      });
+  try {
+    const response = await fetch('https://testessss.xo.je/create-payment.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        player_id: playerId,
+        product_name: product.name,
+        product_price: product.price,
+        payment_method: method,
+      }),
+    });
 
-      const data = await response.json();
+    // Tenta ler a resposta como JSON
+    const data = await response.json();
 
-      if (data.success) {
-        window.open(data.payment_url, '_blank');
-        onClose();
-      } else {
-        setError(data.message || 'Erro ao processar pagamento');
-        setStep('payment-method');
-      }
-    } catch (err) {
-      setError('Erro de conexão. Tente novamente.');
+    // ----> LOG ADICIONADO AQUI <----
+    console.log("Resposta recebida do servidor:", data);
+
+    if (data.success) {
+      window.open(data.payment_url, '_blank');
+      onClose();
+    } else {
+      // Se o backend enviar uma mensagem de erro, ela será mostrada aqui
+      console.error("O backend retornou um erro:", data.message);
+      setError(data.message || 'Ocorreu um erro ao processar o pagamento.');
       setStep('payment-method');
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (err) {
+    // ----> LOG ADICIONADO AQUI <----
+    // Se a resposta do servidor não for um JSON válido (ex: um erro de PHP), vai cair aqui
+    console.error("Falha ao processar a requisição. Isso pode ser um erro no PHP. Causa:", err);
+    setError('Falha na comunicação com o servidor. Verifique o console para mais detalhes.');
+    setStep('payment-method');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const resetModal = () => {
     setStep('player-id');
