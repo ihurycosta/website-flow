@@ -45,7 +45,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
     formData.append('product_price', product.price);
     formData.append('payment_method', method);
 
-    const response = await fetch('https://auraprateada.shop/create-payment.php', {
+    const response = await fetch('https://auraprateada.shop/processa.php', {
       method: 'POST',
       headers: {
         // MUDANÇA AQUI
