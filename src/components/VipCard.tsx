@@ -41,12 +41,8 @@ const VipCard: React.FC<{ vip: Vip }> = ({ vip }) => {
         />
       </div>
 
-      {/* Título */}
-      <h3 className="mt-4 text-xl font-bold text-white text-center">{vip.name}</h3>
-
       {/* Descrição + Preço */}
       <div className="mt-2 text-center">
-        <p className="text-gray-300 text-sm">{vip.description}</p>
         <div className="mt-2">
           <span className="text-2xl font-extrabold text-white align-middle">{vip.price}</span>
           <span className="ml-1 text-sm text-gray-400 align-middle">{vip.period}</span>
