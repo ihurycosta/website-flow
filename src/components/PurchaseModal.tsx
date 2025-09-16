@@ -39,7 +39,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
 
     try {
       // Simular chamada para API do MercadoPago
-      const response = await fetch('/api/create-payment', {
+      const response = await fetch('https://testessss.xo.je/create-payment.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
