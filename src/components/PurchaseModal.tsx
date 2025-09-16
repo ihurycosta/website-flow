@@ -39,7 +39,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
   setError(''); // Limpa erros antigos
 
   try {
-    const response = await fetch('https://testessss.xo.je/create-payment.php', {
+    const response = await fetch('https://testessss.xo.je/debug.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
