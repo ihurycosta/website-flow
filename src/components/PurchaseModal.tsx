@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, CreditCard, QrCode, Loader2 } from 'lucide-react';
+import { X, User, Loader2 } from 'lucide-react';
 
 interface PurchaseModalProps {
   isOpen: boolean;
@@ -12,28 +12,27 @@ interface PurchaseModalProps {
 }
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product }) => {
-  const [step, setStep] = useState<'player-id' | 'payment-method' | 'processing'>('player-id');
+  const [step, setStep] = useState<'player-id' | 'processing'>('player-id');
   const [playerId, setPlayerId] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'credit_card' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handlePlayerIdSubmit = (e: React.FormEvent) => {
+  const handlePlayerIdSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const isNumeric = /^\d+$/;
     if (!playerId.trim()) {
       setError('Por favor, insira seu ID do jogador');
       return;
     }
-    if (playerId.length < 3) {
-      setError('ID do jogador deve ter pelo menos 3 caracteres');
+    if (!isNumeric.test(playerId)) {
+      setError('O ID do jogador deve conter apenas números.');
       return;
     }
     setError('');
-    setStep('payment-method');
+    await processPayment();
   };
 
-  const handlePaymentMethodSelect = async (method: 'pix' | 'credit_card') => {
-    setPaymentMethod(method);
+  const processPayment = async () => {
     setStep('processing');
     setIsLoading(true);
     setError('');
@@ -43,7 +42,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
       formData.append('player_id', playerId);
       formData.append('product_name', product.name);
       formData.append('product_price', product.price);
-      formData.append('payment_method', method);
+      formData.append('payment_method', 'both'); // Permite ambos os métodos no MercadoPago
 
       const response = await fetch('https://auraprateada.shop/processa.php', {
         method: 'POST',
@@ -62,12 +61,12 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
       } else {
         console.error("O backend retornou um erro:", data.message);
         setError(data.message || 'Ocorreu um erro ao processar o pagamento.');
-        setStep('payment-method');
+        setStep('player-id');
       }
     } catch (err) {
       console.error("Falha ao processar a requisição. Isso pode ser um erro no PHP. Causa:", err);
       setError('Falha na comunicação com o servidor. Verifique o console para mais detalhes.');
-      setStep('payment-method');
+      setStep('player-id');
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +75,6 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
   const resetModal = () => {
     setStep('player-id');
     setPlayerId('');
-    setPaymentMethod(null);
     setError('');
     setIsLoading(false);
   };
@@ -89,56 +87,57 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-lg"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={handleClose}
       />
       
       {/* Modal */}
-      <div className="relative bg-gradient-to-b from-zinc-900 to-black rounded-2xl border border-zinc-700 w-full max-w-md mx-auto shadow-2xl">
+      <div className="relative bg-gradient-to-b from-zinc-900 to-black rounded-xl border border-zinc-700 w-full max-w-sm mx-auto shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-zinc-700">
-          <h2 className="text-xl font-bold text-white">
+        <div className="flex items-center justify-between p-4 border-b border-zinc-700">
+          <h2 className="text-lg font-bold text-white">
             Comprar {product.name}
           </h2>
           <button
             onClick={handleClose}
-            className="text-zinc-400 hover:text-white transition-colors">
-            <X className="w-6 h-6" />
+            className="text-zinc-400 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4">
           {/* Product Summary */}
-          <div className="bg-zinc-800/50 rounded-lg p-4 mb-6 border border-zinc-700">
-            <h3 className="font-semibold text-white mb-2">{product.name}</h3>
-            <p className="text-2xl font-bold text-green-400 mb-3">{product.price}</p>
-            <div className="space-y-1">
+          <div className="bg-zinc-800/50 rounded-lg p-3 mb-4 border border-zinc-700">
+            <h3 className="font-semibold text-white mb-1 text-sm">{product.name}</h3>
+            <p className="text-xl font-bold text-green-400 mb-2">{product.price}</p>
+            <div className="space-y-0.5">
               {product.features.slice(0, 3).map((feature, index) => (
-                <p key={index} className="text-sm text-zinc-300">• {feature}</p>
+                <p key={index} className="text-xs text-zinc-300">• {feature}</p>
               ))}
               {product.features.length > 3 && (
-                <p className="text-sm text-zinc-400">+ {product.features.length - 3} benefícios adicionais</p>
+                <p className="text-xs text-zinc-400">+ {product.features.length - 3} benefícios adicionais</p>
               )}
             </div>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-900/50 border border-red-700 rounded-lg p-3 mb-4">
-              <p className="text-red-300 text-sm">{error}</p>
+            <div className="bg-red-900/50 border border-red-700 rounded-lg p-2 mb-3">
+              <p className="text-red-300 text-xs">{error}</p>
             </div>
           )}
 
-          {/* Step 1: Player ID */}
+          {/* Player ID Form */}
           {step === 'player-id' && (
-            <form onSubmit={handlePlayerIdSubmit} className="space-y-4">
+            <form onSubmit={handlePlayerIdSubmit} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  <User className="w-4 h-4 inline mr-2" />
+                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                  <User className="w-3 h-3 inline mr-1" />
                   ID do Jogador
                 </label>
                 <input
@@ -146,88 +145,39 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
                   value={playerId}
                   onChange={(e) => setPlayerId(e.target.value)}
                   placeholder="Digite seu ID do jogador"
-                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-white transition-colors"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-white transition-colors text-sm"
                   autoFocus
                 />
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   Este é o nome do seu personagem no servidor.
                 </p>
               </div>
               <button
                 type="submit"
-                className="w-full bg-white text-black font-semibold py-3 rounded-lg hover:bg-zinc-200 transition-colors"
+                disabled={isLoading}
+                className="w-full bg-white text-black font-semibold py-2.5 rounded-lg hover:bg-zinc-200 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Continuar
+                {isLoading ? 'Processando...' : 'Prosseguir com o Pagamento'}
               </button>
             </form>
           )}
 
-          {/* Step 2: Payment Method */}
-          {step === 'payment-method' && (
-            <div className="space-y-4">
-              <div className="text-center mb-4">
-                <p className="text-zinc-300">Jogador: <span className="text-white font-semibold">{playerId}</span></p>
-              </div>
-              
-              <h3 className="text-lg font-semibold text-white">Escolha a forma de pagamento:</h3>
-              
-              <div className="space-y-3">
-                <button
-                  onClick={() => handlePaymentMethodSelect('pix')}
-                  className="w-full flex items-center justify-between p-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors group"
-                >
-                  <div className="flex items-center">
-                    <QrCode className="w-6 h-6 text-green-400 mr-3" />
-                    <div className="text-left">
-                      <p className="font-semibold text-white">PIX</p>
-                      <p className="text-sm text-zinc-400">Aprovação instantânea</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-green-400 font-semibold">{product.price}</p>
-                    <p className="text-xs text-zinc-400">Sem taxas</p>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => handlePaymentMethodSelect('credit_card')}
-                  className="w-full flex items-center justify-between p-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors group"
-                >
-                  <div className="flex items-center">
-                    <CreditCard className="w-6 h-6 text-blue-400 mr-3" />
-                    <div className="text-left">
-                      <p className="font-semibold text-white">Cartão de Crédito</p>
-                      <p className="text-sm text-zinc-400">Até 12x sem juros</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-blue-400 font-semibold">{product.price}</p>
-                    <p className="text-xs text-zinc-400">Parcelado</p>
-                  </div>
-                </button>
-              </div>
-
-              <button
-                onClick={() => setStep('player-id')}
-                className="w-full pt-2 text-zinc-400 hover:text-white transition-colors text-sm"
-              >
-                ← Voltar
-              </button>
-            </div>
-          )}
-
-          {/* Step 3: Processing */}
+          {/* Processing State */}
           {step === 'processing' && (
-            <div className="text-center py-8">
-              <Loader2 className="w-12 h-12 text-white animate-spin mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">Processando pagamento...</h3>
-              <p className="text-zinc-400">Você será redirecionado para o MercadoPago.</p>
+            <div className="text-center py-6">
+              <div className="text-center mb-3">
+                <p className="text-zinc-300 text-sm">Jogador: <span className="text-white font-semibold">{playerId}</span></p>
+              </div>
+              <Loader2 className="w-8 h-8 text-white animate-spin mx-auto mb-3" />
+              <h3 className="text-base font-semibold text-white mb-1">Processando pagamento...</h3>
+              <p className="text-zinc-400 text-sm">Você será redirecionado para o MercadoPago.</p>
+              <p className="text-zinc-500 text-xs mt-1">PIX e Cartão disponíveis na próxima tela.</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-zinc-700 bg-black/30 rounded-b-2xl">
+        <div className="px-4 py-3 border-t border-zinc-700 bg-black/30 rounded-b-xl">
           <div className="flex items-center justify-center space-x-2 text-xs text-zinc-400">
             <span>🔒</span>
             <span>Pagamento seguro via MercadoPago</span>
