@@ -8,9 +8,20 @@ import './App.css';
 function App() {
   const [activeTab, setActiveTab] = useState('home');
 
+  // Scroll to top functionality when switching tabs
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    
+    // Smooth scroll to top when switching tabs
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Header activeTab={activeTab} setActiveTab={handleTabChange} />
       <main className="pt-20">
         {activeTab === 'home' && <Home />}
         {activeTab === 'products' && <Products />}

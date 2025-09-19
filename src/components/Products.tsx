@@ -66,46 +66,48 @@ const Products: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
-            Torne-se Premium
-          </h1>
-          <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto px-4">
-            Potencialize sua experiência no Flow Roleplay com nossos pacotes VIP. 
-          </p>
+    <div className="min-h-screen custom-background">
+      <div className="min-h-screen py-16 animate-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-8 sm:mb-12 animate-title">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-3 sm:mb-4 bg-gradient-to-r from-white to-gray-600 bg-clip-text text-transparent">
+              Torne-se Premium
+            </h1>
+            <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto px-4 animate-subtitle">
+              Potencialize sua experiência no Flow Roleplay com nossos pacotes VIP. 
+            </p>
+          </div>
+  
+          {/* VIP Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto animate-buttons">
+            <VipCard vip={vipGold} />
+            <VipCard vip={vipDiamond} />
+          </div>
+  
+          {/* Additional Info */}
+        <div className="mt-8 sm:mt-12 lg:mt-16 bg-gradient-to-b from-zinc-900 to-black rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-zinc-700 shadow-lg mx-2 sm:mx-0 animate-section">
+          <div className="text-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
+              Surgiu alguma dúvida?
+            </h2>
+            <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+              Dúvidas sobre compra ou ativação do VIP? Chame nosso time no Discord — abrimos um ticket,
+              orientamos o pagamento e ativamos seu plano sem burocracia.
+            </p>
+          </div>
         </div>
-
-        {/* VIP Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto">
-          <VipCard vip={vipGold} />
-          <VipCard vip={vipDiamond} />
         </div>
-
-        {/* Additional Info */}
-      <div className="mt-8 sm:mt-12 lg:mt-16 bg-gradient-to-b from-zinc-900 to-black rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-zinc-700 shadow-lg mx-2 sm:mx-0">
-        <div className="text-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
-            Surgiu alguma dúvida?
-          </h2>
-          <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-            Dúvidas sobre compra ou ativação do VIP? Chame nosso time no Discord — abrimos um ticket,
-            orientamos o pagamento e ativamos seu plano sem burocracia.
-          </p>
-        </div>
+  
+        {/* Purchase Modal */}
+        {selectedProduct && (
+          <PurchaseModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            product={selectedProduct}
+          />
+        )}
       </div>
-      </div>
-
-      {/* Purchase Modal */}
-      {selectedProduct && (
-        <PurchaseModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          product={selectedProduct}
-        />
-      )}
     </div>
   );
 };

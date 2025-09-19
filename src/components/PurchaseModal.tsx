@@ -56,7 +56,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
       console.log("Resposta recebida do servidor:", data);
 
       if (data.success) {
-        window.open(data.payment_url, '_blank');
+        window.location.href = data.payment_url;
         onClose();
       } else {
         console.error("O backend retornou um erro:", data.message);

@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800">
+  <header className="fixed top-0 left-0 right-0 z-10 custom-background border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                 activeTab === 'home'
                   ? 'bg-white text-black'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                  : 'text-gray-300 hover:text-white hover:bg-zinc-900'
               }`}
             >
               Home
@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center space-x-2 ${
                 activeTab === 'products'
                   ? 'bg-white text-black'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                  : 'text-gray-300 hover:text-white hover:bg-zinc-900'
               }`}
             >
               <ShoppingBagIcon className="w-4 h-4" />
