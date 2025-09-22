@@ -10,7 +10,7 @@ import {
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gradient-to-b from-zinc-900 to-black border-t border-gray-800">
+    <footer className="bg-gradient-to-b from-zinc-900 to-black border-t border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
         {/* Grid de colunas */}
@@ -96,7 +96,7 @@ const Footer: React.FC = () => {
                 <MapPinIcon className="w-4 h-4 text-zinc-400 mt-0.5" />
                 <div className="text-zinc-300 text-sm">
                   <p>IP do Servidor:</p>
-                  <p className="font-mono text-green-400">connect 151.242.227.196:22053</p>
+                  <p className="font-mono text-green-400">connect fivem.flowrp.com.br</p>
                 </div>
               </div>
             </div>
@@ -107,13 +107,13 @@ const Footer: React.FC = () => {
         <div className="border-t border-zinc-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2">
-              <a href="https://flow-roleplay.gitbook.io/flow-roleplay/politicas/diretrizes-do-servidor/regras-do-jogo" className="text-zinc-400 hover:text-white text-sm transition-colors duration-300">
+              <a href="#" className="text-zinc-400 hover:text-white text-sm transition-colors duration-300">
                 Política de Privacidade
               </a>
-              <a href="https://flow-roleplay.gitbook.io/flow-roleplay/politicas/diretrizes-do-servidor/regras-do-jogo" className="text-zinc-400 hover:text-white text-sm transition-colors duration-300">
+              <a href="#" className="text-zinc-400 hover:text-white text-sm transition-colors duration-300">
                 Termos de Serviço
               </a>
-              <a href="https://flow-roleplay.gitbook.io/flow-roleplay/politicas/diretrizes-do-servidor/regras-do-jogo" className="text-zinc-400 hover:text-white text-sm transition-colors duration-300">
+              <a href="#" className="text-zinc-400 hover:text-white text-sm transition-colors duration-300">
                 Política de Reembolso
               </a>
             </div>

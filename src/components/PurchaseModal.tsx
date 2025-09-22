@@ -95,7 +95,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
       />
       
       {/* Modal */}
-      <div className="relative bg-gradient-to-b from-zinc-800 to-black rounded-xl border border-zinc-700 w-full max-w-sm mx-auto shadow-2xl">
+      <div className="relative bg-gradient-to-b from-zinc-900 to-black rounded-xl border border-zinc-700 w-full max-w-sm mx-auto shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-zinc-700">
           <h2 className="text-lg font-bold text-white">
@@ -114,7 +114,15 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
           {/* Product Summary */}
           <div className="bg-zinc-800/50 rounded-lg p-3 mb-4 border border-zinc-700">
             <h3 className="font-semibold text-white mb-1 text-sm">{product.name}</h3>
-            <p className="text-xl font-bold text-green-400 mb-0">{product.price}</p>
+            <p className="text-xl font-bold text-green-400 mb-2">{product.price}</p>
+            <div className="space-y-0.5">
+              {product.features.slice(0, 3).map((feature, index) => (
+                <p key={index} className="text-xs text-zinc-300">• {feature}</p>
+              ))}
+              {product.features.length > 3 && (
+                <p className="text-xs text-zinc-400">+ {product.features.length - 3} benefícios adicionais</p>
+              )}
+            </div>
           </div>
 
           {/* Error Message */}
@@ -140,6 +148,9 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
                   className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-white transition-colors text-sm"
                   autoFocus
                 />
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Este é o nome do seu personagem no servidor.
+                </p>
               </div>
               <button
                 type="submit"
@@ -155,7 +166,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
           {step === 'processing' && (
             <div className="text-center py-6">
               <div className="text-center mb-3">
-                <p className="text-zinc-300 text-sm">ID: <span className="text-white font-semibold">{playerId}</span></p>
+                <p className="text-zinc-300 text-sm">Jogador: <span className="text-white font-semibold">{playerId}</span></p>
               </div>
               <Loader2 className="w-8 h-8 text-white animate-spin mx-auto mb-3" />
               <h3 className="text-base font-semibold text-white mb-1">Processando pagamento...</h3>
