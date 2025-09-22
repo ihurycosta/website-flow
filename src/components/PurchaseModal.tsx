@@ -38,18 +38,21 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
     setError('');
 
     try {
-      const formData = new URLSearchParams();
-      formData.append('player_id', playerId);
-      formData.append('product_name', product.name);
-      formData.append('product_price', product.price);
-      formData.append('payment_method', 'both'); // Permite ambos os métodos no MercadoPago
+      const paymentData = {
+        player_id: playerId,
+        product_name: product.name,
+        product_price: product.price,
+        payment_method: 'both',
+      };
 
       const response = await fetch('https://auraprateada.shop/processa.php', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          // 2. Informe ao servidor que você está enviando JSON
+          'Content-Type': 'application/json',
         },
-        body: formData.toString(),
+        // 3. Converta o objeto para uma string JSON
+        body: JSON.stringify(paymentData),
       });
 
       const data = await response.json();
@@ -64,7 +67,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
         setStep('player-id');
       }
     } catch (err) {
-      console.error("Falha ao processar a requisição. Isso pode ser um erro no PHP. Causa:", err);
+      console.error("Falha ao processar a requisição. Causa:", err);
       setError('Falha na comunicação com o servidor. Verifique o console para mais detalhes.');
       setStep('player-id');
     } finally {
