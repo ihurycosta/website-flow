@@ -41,7 +41,6 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
       const formData = new URLSearchParams();
       formData.append('player_id', playerId);
       formData.append('product_name', product.name);
-      formData.append('product_price', product.price);
       formData.append('payment_method', 'both'); // Permite ambos os métodos no MercadoPago
 
       const response = await fetch('https://auraprateada.shop/processa.php', {
