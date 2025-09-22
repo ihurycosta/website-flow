@@ -1,16 +1,17 @@
-// api/webhook.js
+// Local do arquivo: /api/webhook.js
 
 import fetch from 'node-fetch';
 
 // --- CONFIGURAÇÕES ---
-// É ALTAMENTE RECOMENDADO colocar estes valores como "Environment Variables" no painel da Vercel
-const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || 'APP_USR-7920134045367075-091618-c88c2e30f61af89cce8cb567be2a0f2a-1110300735';
-const MTA_HTTP_HOST     = process.env.MTA_HTTP_HOST || '151.242.227.196';
-const MTA_HTTP_PORT     = process.env.MTA_HTTP_PORT || '22053';
-const MTA_HTTP_USER     = process.env.MTA_HTTP_USER || 'iShaiNBOT';
-const MTA_HTTP_PASS     = process.env.MTA_HTTP_PASS || '3Bb07*6121595';
-const MTA_RESOURCE_NAME = process.env.MTA_RESOURCE_NAME || 'frp_function';
-const MTA_FUNCTION_NAME = process.env.MTA_FUNCTION_NAME || 'givePlayerVip';
+// As credenciais são lidas das "Environment Variables" da Vercel para segurança.
+// No painel do seu projeto Vercel > Settings > Environment Variables, crie cada uma destas variáveis.
+const MP_ACCESS_TOKEN = "APP_USR-7920134045367075-091618-c88c2e30f61af89cce8cb567be2a0f2a-1110300735";
+const MTA_HTTP_HOST     = "151.242.227.196";
+const MTA_HTTP_PORT     = "22053";
+const MTA_HTTP_USER     = "iShaiNBOT";
+const MTA_HTTP_PASS     = "3Bb07*6121595";
+const MTA_RESOURCE_NAME = "frp_function";
+const MTA_FUNCTION_NAME = "givePlayerVip";
 const DEFAULT_VIP_DAYS  = 30;
 
 // A função principal que a Vercel irá executar
@@ -22,6 +23,7 @@ export default async function handler(req, res) {
 
     try {
         const notification = req.body;
+        // O console.log aparecerá nos logs da função na Vercel
         console.log(">> Webhook acionado. Payload:", notification);
 
         // 2. Extrair o ID do pagamento da notificação
@@ -61,7 +63,7 @@ export default async function handler(req, res) {
         // 5. Chamar o servidor MTA
         const mtaUrl = `http://${MTA_HTTP_HOST}:${MTA_HTTP_PORT}/${MTA_RESOURCE_NAME}/${MTA_FUNCTION_NAME}`;
         
-        // Autenticação Basic para o MTA
+        // Autenticação Basic para o MTA (usuário:senha em base64)
         const mtaAuth = 'Basic ' + Buffer.from(`${MTA_HTTP_USER}:${MTA_HTTP_PASS}`).toString('base64');
         
         // Dados a serem enviados via POST
@@ -77,6 +79,7 @@ export default async function handler(req, res) {
             headers: {
                 'Authorization': mtaAuth,
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'User-Agent': 'Vercel-Webhook-FlowRP/1.0' // Adiciona um User-Agent
             },
             body: mtaBody
         });
