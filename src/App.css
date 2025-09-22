@@ -107,36 +107,36 @@ body {
 }
 
 /* ===== SISTEMA DE ANIMAÇÕES SEQUENCIAIS ===== */
-/* Animações com delays para criar efeito sequencial */
+/* Animações otimizadas com delays reduzidos para melhor responsividade */
 
-/* 1. Título principal - aparece primeiro */
+/* 1. Título principal - aparece primeiro (otimizado para 300ms) */
 .animate-title {
   opacity: 0;
-  animation: fadeInDown 1s ease-out 0.2s forwards;
+  animation: fadeInDown 0.3s ease-out 0.1s forwards;
 }
 
-/* 2. Subtítulo - aparece após o título */
+/* 2. Subtítulo - aparece após o título (otimizado para 300ms) */
 .animate-subtitle {
   opacity: 0;
-  animation: fadeInDown 0.8s ease-out 0.6s forwards;
+  animation: fadeInDown 0.3s ease-out 0.2s forwards;
 }
 
-/* 3. Background/elementos de fundo - aparecem em terceiro */
+/* 3. Background/elementos de fundo - aparecem em terceiro (otimizado para 400ms) */
 .animate-background {
   opacity: 0;
-  animation: fadeIn 1.2s ease-out 1s forwards;
+  animation: fadeIn 0.4s ease-out 0.3s forwards;
 }
 
-/* 4. Botões e elementos interativos - aparecem por último */
+/* 4. Botões e elementos interativos - aparecem por último (otimizado para 300ms) */
 .animate-buttons {
   opacity: 0;
-  animation: fadeInUp 0.8s ease-out 1.4s forwards;
+  animation: fadeInUp 0.3s ease-out 0.4s forwards;
 }
 
-/* 5. Seções adicionais com delay maior */
+/* 5. Seções adicionais com delay maior (otimizado para 300ms) */
 .animate-section {
   opacity: 0;
-  animation: fadeInUp 0.8s ease-out 1.8s forwards;
+  animation: fadeInUp 0.3s ease-out 0.5s forwards;
 }
 
 /* ===== SISTEMA DE BACKGROUND PERSONALIZADO ===== */

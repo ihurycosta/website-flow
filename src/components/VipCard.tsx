@@ -26,13 +26,13 @@ const VipCard: React.FC<{ vip: Vip }> = ({ vip }) => {
   };
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-zinc-700 bg-gradient-to-b from-zinc-900 to-black p-5">
+    <div className="group relative overflow-hidden rounded-xl border border-zinc-700 bg-gradient-to-b from-zinc-900 to-black p-5 transition-all duration-300 hover:border-zinc-500 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.02] hover:bg-gradient-to-b hover:from-zinc-800 hover:to-zinc-900">
       {/* IMAGEM */}
       <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: '16 / 10' }}>
         <img
           src={vip.image.replace('://imgur.com/', '://i.imgur.com/')}
           alt={`${vip.name} - imagem do plano`}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           decoding="async"
         />
