@@ -40,8 +40,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
     try {
       const paymentData = {
         player_id: playerId,
-        product_name: product.name,
-        product_price: product.price,
+        product_name: product.name, // O nome ainda é essencial
         payment_method: 'both',
       };
 
