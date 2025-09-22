@@ -21,8 +21,8 @@ define('DB_PASS', '+2Wi=hFbohq@B.uDPqJe@3Os');
 
 // Configurações do Sistema
 define('WEBHOOK_URL', 'https://seudominio.com/webhook.php'); // Substitua pela sua URL
-define('SUCCESS_URL', 'https://seudominio.com/success.html');
-define('FAILURE_URL', 'https://seudominio.com/failure.html');
+define('SUCCESS_URL', 'https://seudominio.com/compra-sucesso');
+define('FAILURE_URL', 'https://seudominio.com/compra-falha');
 
 /**
  * Conecta ao banco de dados
