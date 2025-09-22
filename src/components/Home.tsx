@@ -14,12 +14,25 @@ const Home: React.FC = () => {
               Onde histórias reais, aventuras inesquecíveis e personagens únicos se encontram. Venha se divertir.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8 animate-buttons">
-              <button className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105">
+              {/* Botão "Entrar no Servidor" agora é um link */}
+              <a
+                href="mtasa://151.242.227.196:22053" // <-- SUBSTITUA AQUI
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+              >
                 Entrar no Servidor
-              </button>
-              <button className="px-6 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-black transition-all duration-300">
+              </a>
+              
+              {/* Botão "Discord Oficial" agora é um link */}
+              <a
+                href="https://dsc.gg/flowrpmta" // <-- SUBSTITUA AQUI
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-black transition-all duration-300"
+              >
                 Discord Oficial
-              </button>
+              </a>
             </div>
           </div>
         </div>

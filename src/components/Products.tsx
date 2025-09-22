@@ -32,9 +32,6 @@ const Products: React.FC = () => {
     onPurchase: () => handlePurchase({
       name: 'VIP Ouro',
       price: 'R$ 29,90',
-      features: [
-        '5.000 coins mensais',
-      ]
     })
   };
 
@@ -59,9 +56,6 @@ const Products: React.FC = () => {
     onPurchase: () => handlePurchase({
       name: 'VIP Diamante',
       price: 'R$ 49,90',
-      features: [
-        '10.000 coins mensais',
-      ]
     })
   };
 

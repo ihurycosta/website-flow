@@ -7,8 +7,8 @@ const ServerInfo: React.FC = () => {
   const handleDownload = () => window.open('https://mtasa.com/', '_blank');
 
   return (
-    <section className="py-16 bg-gradient-to-b from-transparent to-zinc-900/80">
-      <div className="max-w-5xl mx-auto px-4">
+    <section className="py-32 bg-gradient-to-b from-transparent to-zinc-900/80">
+      <div className="max-w-6xl mx-auto px-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Como Entrar no Servidor
@@ -49,7 +49,7 @@ const ServerInfo: React.FC = () => {
                   Use nosso botão de conexão direta ou adicione manualmente o IP do servidor no MTA.
                 </p>
                 <div className="bg-zinc-900 border border-zinc-700 p-2 rounded-lg font-mono text-green-400 text-xs">
-                  IP: connect fivem.flowrp.com.br
+                  connect 151.242.227.196:22053
                 </div>
               </div>
             </div>
