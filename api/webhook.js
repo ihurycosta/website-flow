@@ -9,7 +9,7 @@ const MTAClient = mtasa.default || mtasa.Client || mtasa.MTA;
 
 // --- CONFIGURAÇÕES ---
 // As credenciais são lidas das "Environment Variables" da Vercel para segurança.
-const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
+const MP_ACCESS_TOKEN = "APP_USR-7920134045367075-091618-c88c2e30f61af89cce8cb567be2a0f2a-1110300735";
 const MTA_HTTP_HOST     = "151.242.227.196";
 const MTA_HTTP_PORT     = "22053";
 const MTA_HTTP_USER     = "iShaiNBOT";
