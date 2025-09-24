@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         console.log("Conectado ao banco de dados com sucesso.");
 
         // VERIFICAR SE O PAGAMENTO JÁ FOI PROCESSADO
-        const [rows] = await connection.execute('SELECT payment_id FROM processed_payments WHERE payment_id = ?', [paymentId]);
+        const [rows] = await connection.execute('SELECT payment_id FROM frp_processed_payments WHERE payment_id = ?', [paymentId]);
 
         if (rows.length > 0) {
             console.log(`Pagamento ID ${paymentId} já foi processado anteriormente. Ignorando.`);
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
 
         // REGISTAR O PAGAMENTO COMO PROCESSADO NO BANCO DE DADOS
         await connection.execute(
-            'INSERT INTO processed_payments (payment_id, player_id, vip_type) VALUES (?, ?, ?)',
+            'INSERT INTO frp_processed_payments (payment_id, player_id, vip_type) VALUES (?, ?, ?)',
             [paymentId, player_id, vip_tipo]
         );
         console.log(`Pagamento ${paymentId} registado com sucesso na base de dados.`);
