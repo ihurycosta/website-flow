@@ -13,7 +13,7 @@ const Products: React.FC = () => {
 
   const vipGold = {
     name: 'VIP Ouro',
-    price: 'R$ 29,90',
+    price: 'R$ 29,00',
     period: '/mês',
     image: 'https://imgur.com/h1Vw27f.png',
     features: [
@@ -37,7 +37,7 @@ const Products: React.FC = () => {
 
   const vipDiamond = {
     name: 'VIP Diamante',
-    price: 'R$ 49,90',
+    price: 'R$ 49,00',
     period: '/mês',
     image: 'https://imgur.com/cGtQc8M.png',
     features: [
