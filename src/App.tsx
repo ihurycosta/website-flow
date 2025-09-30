@@ -41,6 +41,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<MainApp />} />
+        <Route path="/products" element={<Products />} />
         <Route path="/compra-sucesso" element={<CompraSuccesso />} />
         <Route path="/compra-falha" element={<CompraFalha />} />
       </Routes>
