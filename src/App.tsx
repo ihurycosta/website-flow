@@ -1,7 +1,9 @@
-// app.tsx
+// app.tsx - VERSÃO CORRIGIDA
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom'; // <<< Importe o Outlet
+// V GARANTA QUE O OUTLET ESTÁ SENDO IMPORTADO AQUI V
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom'; 
+
 import Header from './components/Header';
 import Home from './components/Home';
 import Products from './components/Products';
@@ -10,13 +12,14 @@ import CompraFalha from './components/CompraFalha';
 import Footer from './components/Footer';
 import './App.css';
 
-// Componente de Layout que terá o Header e Footer
+// Este é o seu "molde" de página. O Header e Footer são fixos.
 const AppLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-black text-white">
-      <Header /> {/* <<< Não precisa mais passar props de estado */}
+      <Header />
       <main className="pt-20">
-        <Outlet /> {/* <<< Aqui é onde Home ou Products aparecerão */}
+        {/* O <Outlet /> é o espaço que será preenchido pelo Home ou Products */}
+        <Outlet /> 
       </main>
       <Footer />
     </div>
@@ -27,14 +30,18 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Rota principal que usa o layout */}
+        {/* Todas as rotas aqui dentro usarão o AppLayout (Header/Footer) */}
         <Route path="/" element={<AppLayout />}>
-          {/* Rotas filhas que serão renderizadas dentro do <Outlet /> */}
-          <Route index element={<Home />} /> {/* <<< 'index' é a rota padrão para "/" */}
-          <Route path="products" element={<Products />} /> {/* <<< Rota para "/products" */}
+
+          {/* A rota "index" é a página padrão quando a URL for "/" */}
+          <Route index element={<Home />} />
+          
+          {/* A rota "products" será acionada quando a URL for "/products" */}
+          <Route path="products" element={<Products />} />
+
         </Route>
         
-        {/* Rotas que não usam o layout principal */}
+        {/* Estas rotas não têm o Header/Footer */}
         <Route path="/compra-sucesso" element={<CompraSuccesso />} />
         <Route path="/compra-falha" element={<CompraFalha />} />
       </Routes>
