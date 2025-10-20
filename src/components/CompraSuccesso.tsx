@@ -13,7 +13,7 @@ const CompraSuccesso: React.FC = () => {
 
   useEffect(() => {
     // Log para debug
-    console.log('Parâmetros de pagamento recebidos:', paymentData);
+    console.log('Parâmetros de pagamento recebidosss:', paymentData);
     
     // Aqui você pode fazer uma chamada para seu backend para confirmar o pagamento
     // e atualizar o status no banco de dados se necessário
