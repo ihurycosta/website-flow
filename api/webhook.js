@@ -1,105 +1,135 @@
-// Local do arquivo: /api/webhook.js
+// api/webhook.js
+import mysql from "mysql2/promise";
+import mtasa from "mtasa";
 
-import fetch from 'node-fetch';
-import mtasa from 'mtasa';
-const MTAClient = mtasa.default || mtasa.Client || mtasa.MTA;
-import mysql from 'mysql2/promise';
+// ====== ENV (configure na Vercel > Project > Settings > Environment Variables) ======
+const MP_ACCESS_TOKEN  = process.env.MP_ACCESS_TOKEN;     // revogue o antigo e coloque o novo aqui
+const MTA_HTTP_HOST    = process.env.MTA_HTTP_HOST;
+const MTA_HTTP_PORT    = process.env.MTA_HTTP_PORT;
+const MTA_HTTP_USER    = process.env.MTA_HTTP_USER;
+const MTA_HTTP_PASS    = process.env.MTA_HTTP_PASS;
+const MTA_RESOURCE     = process.env.MTA_RESOURCE_NAME || "frp_function";
+const MTA_FUNCTION     = process.env.MTA_FUNCTION_NAME  || "givePlayerVip";
+const DEFAULT_VIP_DAYS = Number(process.env.DEFAULT_VIP_DAYS || 30);
 
-// --- CONFIGURAÇÕES (Inseridas Diretamente no Código) ---
-const MP_ACCESS_TOKEN = "APP_USR-7920134045367075-091618-c88c2e30f61af89cce8cb567be2a0f2a-1110300735";
-const MTA_HTTP_HOST     = "151.242.227.196";
-const MTA_HTTP_PORT     = "22053";
-const MTA_HTTP_USER     = "iShaiNBOT";
-const MTA_HTTP_PASS     = "3Bb07*6121595";
-const MTA_RESOURCE_NAME = 'frp_function';
-const MTA_FUNCTION_NAME = 'givePlayerVip';
-const DEFAULT_VIP_DAYS  = 30;
+// DB
+const DB_HOST = process.env.DB_HOST;
+const DB_USER = process.env.DB_USER;
+const DB_PASS = process.env.DB_PASS;
+const DB_NAME = process.env.DB_NAME;
+const DB_PORT = Number(process.env.DB_PORT || 3306);
 
-// Credenciais do Banco de Dados (inseridas diretamente)
-const DB_HOST           = "151.242.227.127"; // Insira o host do seu DB aqui
-const DB_USER           = "u202_iFJybKgAa8"; // Insira o user do seu DB aqui
-const DB_PASS           = "+2Wi=hFbohq@B.uDPqJe@3Os"; // Insira a senha do seu DB aqui
-const DB_NAME           = "s202_whitelist"; // Insira o nome do seu DB aqui
-const DB_PORT           = 3306; // Mude se a porta for diferente
-
-// Configuração da conexão com o banco de dados
-const dbConfig = {
+// ====== Reuso de Pool em Serverless ======
+let pool = globalThis._frpPool;
+if (!pool) {
+  pool = mysql.createPool({
     host: DB_HOST,
     user: DB_USER,
     password: DB_PASS,
     database: DB_NAME,
-    port: DB_PORT
-};
+    port: DB_PORT,
+    waitForConnections: true,
+    connectionLimit: 5,
+    maxIdle: 5,
+    idleTimeout: 60000,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
+  });
+  globalThis._frpPool = pool;
+}
 
-// A função principal que a Vercel irá executar
+// ====== MTA Client (instancia leve a cada chamada) ======
+const MTAClient = mtasa.default || mtasa.Client || mtasa.MTA;
+
+// ====== Handler ======
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ success: false, message: 'Method Not Allowed' });
+  try {
+    if (req.method !== "POST") {
+      return res.status(405).json({ success: false, message: "Method Not Allowed" });
     }
 
-    const notification = req.body;
-    console.log(">> Webhook acionado. Payload:", notification);
-    const paymentId = notification?.data?.id;
-
-    if (notification?.type !== 'payment' || !paymentId) {
-        return res.status(200).json({ success: true, message: 'Notification ignored' });
+    if (!MP_ACCESS_TOKEN) {
+      return res.status(500).json({ success: false, message: "MP_ACCESS_TOKEN ausente" });
     }
 
-    let connection;
+    // Mercado Pago envia JSON; em Vercel Functions, req.body normalmente já é objeto
+    const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
+    const paymentId = body?.data?.id;
+    const type = body?.type;
+
+    // Ignore eventos não relacionados a pagamento
+    if (type !== "payment" || !paymentId) {
+      return res.status(200).json({ success: true, message: "Notification ignored" });
+    }
+
+    // (Opcional, recomendado) Verificação de assinatura:
+    // const signature = req.headers["x-signature"];
+    // const requestId = req.headers["x-request-id"];
+    // TODO: validar HMAC conforme doc do MP (se habilitado no painel)
+
+    // 1) Consultar detalhes do pagamento
+    const mpResp = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+      headers: { Authorization: `Bearer ${MP_ACCESS_TOKEN}` }
+    });
+    if (!mpResp.ok) {
+      throw new Error(`Falha ao consultar MP. HTTP ${mpResp.status}`);
+    }
+    const payment = await mpResp.json();
+
+    if (payment.status !== "approved") {
+      // Não aprovado ainda — OK retornar 200 para não gerar retry infinito
+      return res.status(200).json({ success: true, message: `Payment ${payment.status}` });
+    }
+
+    const player_id = payment?.metadata?.player_id;
+    const vip_tipo  = payment?.metadata?.vip_tipo;
+
+    if (!player_id || !vip_tipo) {
+      throw new Error("Metadata ausente (player_id/vip_tipo).");
+    }
+
+    // 2) Idempotência: checar se já processou
+    const conn = await pool.getConnection();
     try {
-        // Consultar a API do Mercado Pago
-        const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-            headers: { 'Authorization': `Bearer ${MP_ACCESS_TOKEN}` }
-        });
-        if (!mpResponse.ok) throw new Error(`Falha ao consultar MP. Status: ${mpResponse.status}`);
-        
-        const paymentDetails = await mpResponse.json();
-        console.log(`Detalhes obtidos. Status: ${paymentDetails.status}`);
+      const [exists] = await conn.execute(
+        "SELECT 1 FROM frp_processed_payments WHERE payment_id = ? LIMIT 1",
+        [paymentId]
+      );
+      if (exists.length > 0) {
+        conn.release();
+        return res.status(200).json({ success: true, message: "Payment already processed" });
+      }
 
-        if (paymentDetails.status !== 'approved') {
-            return res.status(200).json({ success: true, message: 'Payment not approved' });
-        }
-        
-        const { player_id, vip_tipo } = paymentDetails.metadata;
-        if (!player_id || !vip_tipo) {
-            throw new Error("Metadata (player_id ou vip_tipo) em falta no pagamento.");
-        }
+      // 3) Chamar MTA
+      const mta = new MTAClient(MTA_HTTP_HOST, MTA_HTTP_PORT, MTA_HTTP_USER, MTA_HTTP_PASS);
+      const result = await mta.resources[MTA_RESOURCE][MTA_FUNCTION](player_id, vip_tipo, DEFAULT_VIP_DAYS);
 
-        // Conectar ao banco de dados
-        connection = await mysql.createConnection(dbConfig);
-        console.log("Conectado ao banco de dados com sucesso.");
+      if (!result) {
+        throw new Error("MTA retornou resultado vazio/nulo.");
+      }
 
-        // VERIFICAR SE O PAGAMENTO JÁ FOI PROCESSADO
-        const [rows] = await connection.execute('SELECT payment_id FROM frp_processed_payments WHERE payment_id = ?', [paymentId]);
+      // 4) Registrar processamento
+      await conn.execute(
+        "INSERT INTO frp_processed_payments (payment_id, player_id, vip_type) VALUES (?, ?, ?)",
+        [paymentId, String(player_id), String(vip_tipo)]
+      );
+      conn.release();
 
-        if (rows.length > 0) {
-            console.log(`Pagamento ID ${paymentId} já foi processado anteriormente. Ignorando.`);
-            await connection.end();
-            return res.status(200).json({ success: true, message: 'Payment already processed.' });
-        }
-
-        console.log(`Pagamento ${paymentId} é novo. Processando entrega do VIP...`);
-        
-        // Chamar o MTA para dar o VIP
-        const mta = new MTAClient(MTA_HTTP_HOST, MTA_HTTP_PORT, MTA_HTTP_USER, MTA_HTTP_PASS);
-        const result = await mta.resources[MTA_RESOURCE_NAME][MTA_FUNCTION_NAME](player_id, vip_tipo, DEFAULT_VIP_DAYS);
-        
-        if (!result) throw new Error('A chamada ao MTA não retornou um resultado.');
-        console.log(`SUCESSO! MTA respondeu: ${result}`);
-
-        // REGISTAR O PAGAMENTO COMO PROCESSADO NO BANCO DE DADOS
-        await connection.execute(
-            'INSERT INTO frp_processed_payments (payment_id, player_id, vip_type) VALUES (?, ?, ?)',
-            [paymentId, player_id, vip_tipo]
-        );
-        console.log(`Pagamento ${paymentId} registado com sucesso na base de dados.`);
-        
-        await connection.end();
-        res.status(200).json({ success: true, message: 'VIP aplicado com sucesso!', mta_response: result });
-
-    } catch (error) {
-        console.error("ERRO CRÍTICO NO WEBHOOK:", error);
-        if (connection) await connection.end();
-        res.status(500).json({ success: false, message: error.message || 'Internal Server Error' });
+      // 5) Done
+      return res.status(200).json({
+        success: true,
+        message: "VIP aplicado",
+        mta_response: result
+      });
+    } catch (err) {
+      // Sempre liberar conexão em erro dentro do bloco do DB
+      try { pool.releaseConnection?.(); } catch {}
+      throw err;
     }
+
+  } catch (error) {
+    console.error("Webhook ERROR:", error?.message || error);
+    // 200 ou 500? — Se quiser que o MP tente novamente, use 500.
+    return res.status(500).json({ success: false, message: error?.message || "Internal Error" });
+  }
 }
