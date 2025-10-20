@@ -44,7 +44,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, product 
         payment_method: 'both',
       };
 
-      const response = await fetch('https://flowroleplay.com.br/api/payments.php', {
+      const response = await fetch('https://flowroleplay.com.br/api/payments', {
         method: 'POST',
         headers: {
           // 2. Informe ao servidor que você está enviando JSON
