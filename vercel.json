@@ -1,8 +1,9 @@
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
+  "functions": {
+    "api/**/*.php": { "runtime": "vercel-php@0.6.0" }
+  },
+  "routes": [
+    { "src": "/api/payments", "dest": "/api/payments.php" },
+    { "src": "/api/webhook",  "dest": "/api/webhook.php"  }
   ]
 }
