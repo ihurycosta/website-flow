@@ -4,7 +4,6 @@
   },
   "routes": [
     { "src": "^/api/payments$", "dest": "/api/payments.php" },
-    { "src": "^/api/webhook$",  "dest": "/api/webhook.js"  },
-    { "src": "^/api/health$",   "dest": "/api/health.php"  }
+    { "src": "^/api/webhook$",  "dest": "/api/webhook.js"  }
   ]
 }
