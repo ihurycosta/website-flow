@@ -36,7 +36,7 @@ function App() {
           <Route path="products" element={<Products />} />
         </Route>
         
-        <Route path="/compra-sucesso" element={<CompraSuccesso />} />
+        <Route path="/compra-sucessor" element={<CompraSuccesso />} />
         <Route path="/compra-falha" element={<CompraFalha />} />
       </Routes>
     </Router>
