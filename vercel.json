@@ -1,15 +1,14 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "functions": {
     "api/**/*.php": { "runtime": "vercel-php@0.7.4" }
   },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-
-    { "source": "/((?!api|_next|assets|favicon\\.ico|robots\\.txt|.*\\..*).*)", "destination": "/" }
-  ],
   "routes": [
     { "src": "^/api/payments$", "dest": "/api/payments.php" },
-    { "src": "^/api/webhook$",  "dest": "/api/webhook.js"  }
+    { "src": "^/api/webhook$",  "dest": "/api/webhook.js"  },
+    { "src": "^/(.*\\..*)$",    "dest": "/$1" },
+    { "src": "/.*",             "dest": "/" }
   ]
 }
