@@ -30,18 +30,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Todas as rotas aqui dentro usarão o AppLayout (Header/Footer) */}
         <Route path="/" element={<AppLayout />}>
 
-          {/* A rota "index" é a página padrão quando a URL for "/" */}
           <Route index element={<Home />} />
-          
-          {/* A rota "products" será acionada quando a URL for "/products" */}
           <Route path="products" element={<Products />} />
-
         </Route>
         
-        {/* Estas rotas não têm o Header/Footer */}
         <Route path="/compra-sucesso" element={<CompraSuccesso />} />
         <Route path="/compra-falha" element={<CompraFalha />} />
       </Routes>
